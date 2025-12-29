@@ -8,11 +8,11 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 import sys
 
-# Configuración de Logs
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger("VoIPClient")
 
-# Dependencias Opcionales
+
 try:
     import pyaudio
     PYAUDIO_AVAILABLE = True
@@ -33,15 +33,12 @@ class VoIPClient:
         self.number = number
         self.name = name or ""
         
-        # UI Callbacks
         self.ui = ui_callback
         
-        # Red
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind(("0.0.0.0", 0))
         self.local_port = self.sock.getsockname()[1]
         
-        # Estado
         self.running = True
         self.connected = False
         self.peer = None
@@ -49,19 +46,21 @@ class VoIPClient:
         self.call_pending = False
         self.last_pong = time.time()
         
-        # Audio Config
+
         self.audio_rate = 16000
         self.audio_chunk = 320  # 20ms
-        self.audio_format = pyaudio.paInt16 if PYAUDIO_AVAILABLE else None
+        self.audio_format = 8 
         self.audio_channels = 1
         
-        # Objetos PyAudio
+        if PYAUDIO_AVAILABLE:
+            self.audio_format = pyaudio.paInt16
+        
         self.p = None
         self.stream_in = None
         self.stream_out = None
         self.audio_thread = None
         
-        # Hilos de control
+        
         self._start_threads()
 
     def _start_threads(self):
@@ -78,7 +77,7 @@ class VoIPClient:
     def _listen_loop(self):
         while self.running:
             try:
-                data, _ = self.sock.recvfrom(4096) # Buffer típico UDP
+                data, _ = self.sock.recvfrom(4096) 
                 msg = data.decode(errors="ignore").strip()
                 if msg:
                     self._process_message(msg)
@@ -89,7 +88,7 @@ class VoIPClient:
                 logger.error(f"Error en listen loop: {e}")
 
     def _process_message(self, msg):
-        # Deduplicación simple (opcional)
+        
         now = time.time()
         
         if msg == "OK":
@@ -111,7 +110,7 @@ class VoIPClient:
             self.ui.log(f"[LIST] {count} usuarios online")
 
         elif msg.startswith("CALL_FROM:"):
-            # Formato: CALL_FROM:caller:caller_name
+            
             parts = msg.split(":", 2)
             if len(parts) >= 3:
                 caller = parts[1]
@@ -119,7 +118,7 @@ class VoIPClient:
                 self._handle_incoming_call(caller, caller_name)
 
         elif msg.startswith("ACCEPT_FROM:"):
-            # Formato: ACCEPT_FROM:callee
+            
             callee = msg.split(":")[1]
             self._start_call_session(callee)
             self.ui.log(f"[CALL] Aceptada por {callee}")
@@ -193,7 +192,7 @@ class VoIPClient:
             self.send(f"REGISTER:{self.number}:{self.local_port}:{self.name}")
             time.sleep(0.5)
 
-    # --- Lógica de Llamada ---
+    
 
     def call(self, number):
         if not number or self.in_call or self.call_pending:
@@ -261,7 +260,7 @@ class VoIPClient:
         self.ui.set_in_call_ui(False)
         self.ui.log(f"[SYSTEM] Llamada finalizada: {reason}")
 
-    # --- Audio ---
+    
 
     def _init_audio(self):
         if not PYAUDIO_AVAILABLE:
@@ -272,7 +271,7 @@ class VoIPClient:
             
             # Input Stream
             self.stream_in = self.p.open(
-                format=self.audio_format,
+                format=self.audio_format, # FIX: Ahora siempre es int
                 channels=self.audio_channels,
                 rate=self.audio_rate,
                 input=True,
@@ -280,9 +279,9 @@ class VoIPClient:
                 stream_callback=self._audio_input_callback
             )
             
-            # Output Stream
+            
             self.stream_out = self.p.open(
-                format=self.audio_format,
+                format=self.audio_format, # FIX: Ahora siempre es int
                 channels=self.audio_channels,
                 rate=self.audio_rate,
                 output=True,
@@ -317,7 +316,7 @@ class VoIPClient:
             if self.stream_out and self.stream_out.is_active():
                 self.stream_out.write(data)
         except Exception as e:
-            # logger.debug(f"Error reproduciendo audio: {e}") # Silenciar para no saturar logs
+            
             pass
 
     def _stop_audio(self):
@@ -349,7 +348,7 @@ class VoIPClient:
             self.sock.close()
         except: pass
 
-# ================= UI (Tkinter) =================
+
 
 class App:
     def __init__(self):
@@ -475,7 +474,7 @@ class App:
         self.spk_btn = ttk.Button(self.audio_ctrl_frame, text="Spk: ON", command=self._toggle_speaker)
         self.spk_btn.pack(side="left", padx=10)
 
-    # --- Funciones UI ---
+
     
     def _append(self, char):
         self.number_var.set(self.number_var.get() + char)
@@ -539,7 +538,7 @@ class App:
     def stop_call_timer(self):
         pass # El loop se detiene solo al verificar client.in_call
 
-    # --- Ajustes y Conexion ---
+
 
     def _open_settings(self):
         win = tk.Toplevel(self.root)
@@ -574,7 +573,7 @@ class App:
         self.client = VoIPClient(self.server_host, self.server_port, number, name, self)
         self.client._register()
 
-    # --- Ventanas de Llamada ---
+
 
     def on_incoming_call(self, caller, name):
         # Mostrar ventana flotante
@@ -597,18 +596,22 @@ class App:
         
         def acc():
             self.stop_ringtone()
-            self.client.accept(caller)
+            # FIX Pylance: Verificar que self.client no sea None
+            if self.client:
+                self.client.accept(caller)
             self.incoming_win.destroy()
             
         def rej():
             self.stop_ringtone()
-            self.client.reject(caller)
+            # FIX Pylance: Verificar que self.client no sea None
+            if self.client:
+                self.client.reject(caller)
             self.incoming_win.destroy()
             
         ttk.Button(btns, text="Aceptar", style="Call.TButton", command=acc).pack(side="left", padx=10)
         ttk.Button(btns, text="Rechazar", style="Hang.TButton", command=rej).pack(side="left", padx=10)
 
-    # --- Sonidos (Hilos) ---
+
 
     def start_ringtone(self):
         if self.ringtone_active or not WINSOUND_AVAILABLE: return
