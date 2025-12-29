@@ -1,5 +1,3 @@
-# server.py - Servidor de Señalización VoIP (reenviando señales WebRTC)
-
 import socket
 import threading
 import time
