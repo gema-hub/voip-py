@@ -1,123 +1,133 @@
-# 📞 voip-py — Llamadas VoIP desde PC
+# 📞 VOIP-PY — Llamadas P2P desde PC
 
-> Aplicación **VoIP en Python** para realizar **llamadas normales desde PC**.  
-> Compilada con **Nuitka** para binarios nativos.  
-> **No busco estrellas** → busco **comentarios, issues y PRs técnicos**.
-
----
-
-## 🚀 ¿Qué es esto?
-
-`voip-py` permite realizar llamadas VoIP usando protocolos estándar (ej: SIP/RTP) directamente desde PC.  
-La idea del proyecto es experimentar con **telefonía IP**, **audio en tiempo real** y **empaquetado con Nuitka**.
-
-Este repo es ideal si te interesa:
-- VoIP / SIP / RTP
-- Audio en tiempo real
-- Python + multimedia
-- Telefonía IP desde desktop
-- Compilación con Nuitka
+> Aplicación VoIP hecha en Python para hacer **llamadas de voz P2P** entre equipos, sin servidores centrales.  
+> No busco estrellas, busco **comentarios, issues y PRs** con feedback técnico.
 
 ---
 
-## 🛠 Tecnologías
+## 🎯 Descripción
+
+VOIP-PY permite que dos PCs se comuniquen por audio en tiempo real usando sockets (UDP/TCP), compresión de audio y descubrimiento entre pares.
+
+La idea es hacer llamadas “normales” entre equipos sin pasar por proveedores externos.
+
+---
+
+## 🧩 Objetivos del Proyecto
+
+- Comunicación **P2P** directa
+- **Baja latencia** y audio fluido
+- Compatible Windows / Linux
+- Sin dependencias de servicios externos
+- Opción futura de **relay** si NAT complica
+
+Si tienes experiencia en:
+- RTP/WebRTC
+- Audio realtime
+- NAT traversal (STUN/TURN/ICE)
+- Compresión Opus
+- Packet jitter / buffering
+
+👉 Deja feedback técnico en un Issue.
+
+---
+
+## 🔧 Tecnologías Usadas
 
 - Python ≥ 3.10
-- Nuitka (compilado)
-- (Opcional) `pjsua`, `pjsip`, `aiortc`, `sounddevice`, etc.
-- Audio: `pyaudio` / `sounddevice`
-- Codec: depende del stack de audio que uses (G.711 / Opus / etc)
+- `pyaudio` o `sounddevice` (captura & playback)
+- `socket` (UDP/TCP)
+- `threading` o `asyncio`
+- Opcional: `opuslib` para compresión
 
 ---
 
-## 📦 Compilación con Nuitka
+## 🗂 Características
 
-Ejemplo:
+- Captura de micrófono
+- Envío de audio en tiempo real
+- Buffer anti-jitter básico
+- Modo cliente/servidor P2P
+- Poca latencia (depende red)
+
+---
+
+## 🚧 Próximas Mejoras (TODO)
+
+- [ ] Compresión **Opus**
+- [ ] Anti-jitter avanzado
+- [ ] Detección NAT + STUN
+- [ ] Relay opcional para NAT estrictos
+- [ ] GUI mínima (Tk/Qt/Web)
+- [ ] Modo conferencia
+- [ ] Cifrado (AES/DTLS)
+- [ ] Benchmarks de latencia
+- [ ] Compilación con Nuitka (binario)
+
+---
+
+## 📦 Compilación Nuitka (opcional)
 
 ```bash
 python -m nuitka --standalone --onefile --remove-output \
-    --follow-imports \
-    voip.py
+    --enable-console \
+    --follow-imports voip.py
 ```
 
-Opcionales útiles para performance:
-
-- `--lto=yes` → optimización de enlace
-- `--clang` → usa clang si está disponible
-- `--enable-console` → modo debug
-- `--disable-console` → modo producción GUI
+Recomendado:
+- `--lto=yes`
+- `--clang`
 
 ---
 
-## ▶️ Ejecución
+## ▶️ Cómo Probar
 
-Windows:
+1. PC A escucha:
+```
+python voip.py --listen --port 5000
+```
 
+2. PC B llama:
 ```
-./build/voip.exe
+python voip.py --call <IP_DEL_PC_A> --port 5000
 ```
 
-Linux:
-
-```
-chmod +x voip && ./voip
-```
+Si se escuchan ⇒ funciona el audio P2P.
 
 ---
 
-## 🗣 Feedback que busco
+## 🗣 Qué comentarios busco
 
-Busco **problemas reales y comentarios técnicos**, como:
+Lo útil para mí es:
 
-✔ Latencia de audio  
-✔ Compatibilidad con dispositivos (micrófonos/headsets)  
-✔ Problemas con SIP o RTP  
-✔ Rendimiento tras compilar con Nuitka  
-✔ Tamaño del binario  
-✔ Issues de paquetes o dependencias  
+✔ pruebas en red real  
+✔ logs de errores  
+✔ NAT issues  
+✔ delay / jitter  
+✔ uso CPU / RAM  
+✔ ideas sobre audio / codecs  
+✔ PRs de mejora  
 
-Si probaste y algo falló → **abre un Issue**, ese es el objetivo del repo.
-
----
-
-## 📝 Roadmap / TODO
-
-- [ ] Mejorar manejo de audio (buffering / jitter)
-- [ ] Soporte para más códecs
-- [ ] Marcador (dialpad) GUI con teclado
-- [ ] Identificador de llamadas
-- [ ] Contactos
-- [ ] Mejorar empaquetado (NSIS/DEB/AppImage)
-- [ ] CI/CD con Nuitka
-- [ ] WebRTC (posible) vía `aiortc`
-
-Si quieres ayudar → haz PR o Issue.
+No busco “bonito proyecto”, busco **críticas técnicas**.
 
 ---
 
-## 🤝 Contribuciones
+## 🤝 Contribuir
 
-**PRs** y **Issues** están abiertos.  
+Pull Requests = **Bienvenidos**  
+Issues = **Aún mejor**
+
 Setup rápido:
 
 ```bash
 git clone <repo>
 pip install -r requirements.txt
-python voip.py   # test antes de compilar
+python voip.py --help
 ```
 
 ---
 
-## 🙌 Estado del proyecto
+## 📬 Feedback
 
-📌 **En desarrollo**  
-🔍 **Buscando testers técnicos**  
-📨 **Aportaciones abiertas**
-
----
-
-## 📬 Contacto / Feedback
-
-Abre un **Issue**, PR o comenta en el repo.
-
-> No busco estrellas — busco **comentarios técnicos** que me hagan mejorar el proyecto.
+Abre un **Issue** o PR en el repo y comenta tu experiencia.  
+> No me interesan estrellas, me interesa tu **feedback técnico** sobre VoIP y P2P.
