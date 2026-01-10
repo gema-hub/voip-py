@@ -34,7 +34,7 @@ Si tienes experiencia en:
 
 ## 🔧 Tecnologías Usadas
 
-- Python ≥ 3.10
+- Python ≥ 3.12
 - `pyaudio` o `sounddevice` (captura & playback)
 - `socket` (UDP/TCP)
 - `threading` o `asyncio`
