@@ -1,47 +1,51 @@
-# 🧩 voip-py
+# 📞 voip-py — Llamadas VoIP desde PC
 
-> Ejecutable compilado con **Nuitka**. No busco estrellas, busco **comentarios, issues y PRs** con feedback técnico.
+> Aplicación **VoIP en Python** para realizar **llamadas normales desde PC**.  
+> Compilada con **Nuitka** para binarios nativos.  
+> **No busco estrellas** → busco **comentarios, issues y PRs técnicos**.
 
 ---
 
-## 🚀 Motivo del Proyecto
+## 🚀 ¿Qué es esto?
 
-- Python es rápido para desarrollar pero difícil de distribuir sin entorno.
-- Nuitka permite compilar a **binarios nativos** con buena compatibilidad.
-- Quiero mejorar packaging, distribución y rendimiento.
+`voip-py` permite realizar llamadas VoIP usando protocolos estándar (ej: SIP/RTP) directamente desde PC.  
+La idea del proyecto es experimentar con **telefonía IP**, **audio en tiempo real** y **empaquetado con Nuitka**.
 
-Si tienes experiencia en:
-- Optimización
-- Distribución binaria
-- Seguridad / ofuscación
-- Python Packaging
-
-👉 Me interesa tu feedback.
+Este repo es ideal si te interesa:
+- VoIP / SIP / RTP
+- Audio en tiempo real
+- Python + multimedia
+- Telefonía IP desde desktop
+- Compilación con Nuitka
 
 ---
 
 ## 🛠 Tecnologías
 
-- Python ≥ 3.12
-- Nuitka (compilador Python → C)
-- (Dependencias opcionales: …)
+- Python ≥ 3.10
+- Nuitka (compilado)
+- (Opcional) `pjsua`, `pjsip`, `aiortc`, `sounddevice`, etc.
+- Audio: `pyaudio` / `sounddevice`
+- Codec: depende del stack de audio que uses (G.711 / Opus / etc)
 
 ---
 
 ## 📦 Compilación con Nuitka
 
-Ejemplo real:
+Ejemplo:
 
 ```bash
 python -m nuitka --standalone --onefile --remove-output \
-    --enable-plugin=tk-inter \
-    --follow-imports win_client.py
+    --follow-imports \
+    voip.py
 ```
 
-Opciones opcionales útiles:
-- `--lto=yes` → Link-Time Optimization
-- `--clang` → usar Clang si está disponible
-- `--enable-console` / `--disable-console`
+Opcionales útiles para performance:
+
+- `--lto=yes` → optimización de enlace
+- `--clang` → usa clang si está disponible
+- `--enable-console` → modo debug
+- `--disable-console` → modo producción GUI
 
 ---
 
@@ -50,22 +54,70 @@ Opciones opcionales útiles:
 Windows:
 
 ```
-./build/main.exe
+./build/voip.exe
 ```
 
 Linux:
 
 ```
-chmod +x main && ./main
+chmod +x voip && ./voip
 ```
+
+---
+
+## 🗣 Feedback que busco
+
+Busco **problemas reales y comentarios técnicos**, como:
+
+✔ Latencia de audio  
+✔ Compatibilidad con dispositivos (micrófonos/headsets)  
+✔ Problemas con SIP o RTP  
+✔ Rendimiento tras compilar con Nuitka  
+✔ Tamaño del binario  
+✔ Issues de paquetes o dependencias  
+
+Si probaste y algo falló → **abre un Issue**, ese es el objetivo del repo.
 
 ---
 
 ## 📝 Roadmap / TODO
 
-- [ ] Reducir tamaño del ejecutable
-- [ ] Benchmark rendimiento
-- [ ] Empaquetado (NSIS / Deb / AppImage)
-- [ ] CI/CD con GitHub Actions + Nuitka
-- [ ] Tests unitarios
-- [ ] Documentar plugins Nuitka
+- [ ] Mejorar manejo de audio (buffering / jitter)
+- [ ] Soporte para más códecs
+- [ ] Marcador (dialpad) GUI con teclado
+- [ ] Identificador de llamadas
+- [ ] Contactos
+- [ ] Mejorar empaquetado (NSIS/DEB/AppImage)
+- [ ] CI/CD con Nuitka
+- [ ] WebRTC (posible) vía `aiortc`
+
+Si quieres ayudar → haz PR o Issue.
+
+---
+
+## 🤝 Contribuciones
+
+**PRs** y **Issues** están abiertos.  
+Setup rápido:
+
+```bash
+git clone <repo>
+pip install -r requirements.txt
+python voip.py   # test antes de compilar
+```
+
+---
+
+## 🙌 Estado del proyecto
+
+📌 **En desarrollo**  
+🔍 **Buscando testers técnicos**  
+📨 **Aportaciones abiertas**
+
+---
+
+## 📬 Contacto / Feedback
+
+Abre un **Issue**, PR o comenta en el repo.
+
+> No busco estrellas — busco **comentarios técnicos** que me hagan mejorar el proyecto.
